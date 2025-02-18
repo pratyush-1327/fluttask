@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/todo_provider.dart';
+import '../../presentation/providers/todo_provider.dart';
+import '../widgets/todo_list.dart';
+import '../widgets/add_task_dialog.dart';
 
 class TodoScreen extends ConsumerWidget {
   @override
@@ -8,28 +10,21 @@ class TodoScreen extends ConsumerWidget {
     final todos = ref.watch(todoListProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text("ToDo List"),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.refresh),
-            onPressed: () => ref.refresh(todoListProvider),
-          )
-        ],
-      ),
+      appBar: AppBar(title: Text("ToDo List")),
       body: todos.when(
-        data: (items) => ListView.builder(
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            final todo = items[index];
-            return ListTile(
-              title: Text(todo.title),
-              trailing: Checkbox(value: todo.completed, onChanged: null),
-            );
-          },
+        data: (items) => TodoList(
+          items: items,
+          ref: ref,
         ),
         loading: () => Center(child: CircularProgressIndicator()),
         error: (err, _) => Center(child: Text("Error: $err")),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => showDialog(
+          context: context,
+          builder: (context) => AddTaskDialog(ref: ref),
+        ),
+        child: Icon(Icons.add),
       ),
     );
   }

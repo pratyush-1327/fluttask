@@ -10,6 +10,7 @@ final todoApiProvider = Provider((ref) {
   final dio = ref.watch(dioProvider);
   return TodoApi(dio);
 });
+
 final todoListProvider = FutureProvider<List<Todo>>((ref) async {
   final api = ref.watch(todoApiProvider);
   final apiKey = await SharedPrefs.getApiKey();
@@ -18,12 +19,26 @@ final todoListProvider = FutureProvider<List<Todo>>((ref) async {
 
   try {
     final todos = await api.getTodos(apiKey);
-    print("Fetched Todos: $todos"); // Debugging log
     return todos;
   } catch (e) {
-    print("Error fetching Todos: $e");
-    throw Exception("Failed to fetch todos");
+    throw Exception("Failed to fetch todos: $e");
   }
+});
+
+final addTodoProvider =
+    FutureProvider.family<Todo, Map<String, String>>((ref, taskData) async {
+  final apiKey = await SharedPrefs.getApiKey();
+
+  if (apiKey.isEmpty) throw Exception("API Key not found");
+
+  final title = taskData['title']?.trim() ?? "";
+  final description = taskData['description']?.trim() ?? "";
+
+  if (title.isEmpty || description.isEmpty) {
+    throw Exception("Title and Description cannot be empty");
+  }
+
+  return await TodoApiProvider.addTodo(apiKey, title, description);
 });
 
 class TodoApiProvider {
@@ -34,23 +49,33 @@ class TodoApiProvider {
 
       final response = await api.getTodos(apiKey);
 
-      if (response != null && response.isNotEmpty) {
-        print("API Key is valid ");
-        return true;
-      } else {
-        print("API Key is invalid ");
-        return false;
-      }
+      return response.isNotEmpty;
     } on DioException catch (e) {
-      if (e.response != null) {
-        print("API Key Validation Failed: ${e.response?.statusCode}");
-      } else {
-        print("API Key Validation Error: ${e.message}");
-      }
+      print(
+          "API Key Validation Failed: ${e.response?.statusCode ?? e.message}");
       return false;
     } catch (e) {
-      print("Unexpected Errror: $e");
+      print("Unexpected Error: $e");
       return false;
+    }
+  }
+
+  static Future<Todo> addTodo(
+      String apiKey, String title, String description) async {
+    if (title.isEmpty || description.isEmpty) {
+      throw Exception("Title and description cannot be empty");
+    }
+    try {
+      final dio = Dio();
+      final api = TodoApi(dio);
+      final newTodo = await api.createTodo(apiKey, {
+        'title': title,
+        'description': description,
+      });
+      return newTodo;
+    } catch (e) {
+      print("Error adding Todo: $e");
+      throw Exception("Failed to add todo");
     }
   }
 }
