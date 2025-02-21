@@ -45,19 +45,22 @@ class TodoApiProvider {
   static Future<bool> validateApiKey(String apiKey) async {
     try {
       final dio = Dio();
-      final api = TodoApi(dio);
-
-      final response = await api.getTodos(apiKey);
-
-      return response.isNotEmpty;
+      final response = await dio.get(
+        "https://todocrud.chiggydoes.tech/todos/",
+        options: Options(headers: {"X-API-Key": apiKey}),
+      );
+      if (response.statusCode == 200) return true;
+      if (response.statusCode == 401) return false;
     } on DioException catch (e) {
-      print(
-          "API Key Validation Failed: ${e.response?.statusCode ?? e.message}");
-      return false;
+      if (e.response?.statusCode == 401) {
+        print("Invalid API Key: ${e.response?.statusCode}");
+        return false;
+      }
+      print("API Validation Error: ${e.response?.statusCode ?? e.message}");
     } catch (e) {
       print("Unexpected Error: $e");
-      return false;
     }
+    return false;
   }
 
   static Future<Todo> addTodo(

@@ -26,15 +26,23 @@ class TodoList extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("Description: ${todo.description}"),
+                Text("Time: ${todo.timestamp}"),
+                Text("Status: ${todo.status}"),
               ],
             ),
-            trailing: Switch(
-              value: todo.completed,
-              onChanged: (newValue) async {
-                final apiKey = await SharedPrefs.getApiKey();
-                final api = TodoApi(Dio());
-                await api.updateTodo(apiKey, todo.id, {"completed": newValue});
-                ref.refresh(todoListProvider);
+            trailing: StatefulBuilder(
+              builder: (context, setState) {
+                return Switch(
+                  value: todo.status == "completed",
+                  onChanged: (newValue) async {
+                    final apiKey = await SharedPrefs.getApiKey();
+                    final api = TodoApi(Dio());
+                    await api.updateTodo(apiKey, todo.id,
+                        {"status": newValue ? "completed" : "pending"});
+                    ref.refresh(todoListProvider);
+                    setState(() {}); // Ensure UI updates immediately
+                  },
+                );
               },
             ),
             onTap: () => _showTodoDetails(context, todo),
@@ -57,7 +65,7 @@ class TodoList extends StatelessWidget {
               Text("Task ID: ${todo.id}"),
               Text("Description: ${todo.description}"),
               Text("Time: ${todo.timestamp}"),
-              Text("Completed: ${todo.completed ? 'Yes' : 'No'}"),
+              Text("Status: ${todo.status}"),
             ],
           ),
           actions: [

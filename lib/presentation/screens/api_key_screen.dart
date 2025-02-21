@@ -27,10 +27,10 @@ class _ApiKeyScreenState extends State<ApiKeyScreen> {
           MaterialPageRoute(builder: (context) => TodoScreen()),
         );
       } else {
-        setState(() => _error = 'Invalid API Key');
+        setState(() => _error = 'Invalid API Key or API Error (Code 201)');
       }
     } catch (e) {
-      setState(() => _error = 'Error: \$e');
+      setState(() => _error = 'Error: $e');
     }
   }
 
