@@ -21,13 +21,12 @@ class TodoList extends StatelessWidget {
         return Card(
           child: ListTile(
             title:
-                Text(todo.title, style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(todo.title, style: Theme.of(context).textTheme.titleLarge),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("Description: ${todo.description}"),
-                Text("Time: ${todo.timestamp}"),
-                Text("Status: ${todo.status}"),
+                Text("Time: ${todo.createdAt}"),
               ],
             ),
             trailing: StatefulBuilder(
@@ -64,7 +63,7 @@ class TodoList extends StatelessWidget {
             children: [
               Text("Task ID: ${todo.id}"),
               Text("Description: ${todo.description}"),
-              Text("Time: ${todo.timestamp}"),
+              Text("Time: ${todo.createdAt}"),
               Text("Status: ${todo.status}"),
             ],
           ),
@@ -72,9 +71,10 @@ class TodoList extends StatelessWidget {
             TextButton(
               onPressed: () async {
                 final apiKey = await SharedPrefs.getApiKey();
-                final api = TodoApi(Dio());
+                final api = ref.read(todoApiProvider);
+
                 await api.deleteTodo(apiKey, todo.id);
-                ref.refresh(todoListProvider);
+                await ref.refresh(todoListProvider);
                 Navigator.pop(context);
               },
               child: Text("Delete"),
