@@ -19,9 +19,8 @@ class _ApiKeyScreenState extends State<ApiKeyScreen> {
       return;
     }
     try {
-      final todoApiProvider = TodoApiProvider(); // Create an instance
-      final isValid =
-          await todoApiProvider.validateApiKey(apiKey); // Call on instance
+      final todoApiProvider = TodoApiProvider();
+      final isValid = await todoApiProvider.validateApiKey(apiKey);
       if (isValid) {
         await SharedPrefs.saveApiKey(apiKey);
         Navigator.pushReplacement(

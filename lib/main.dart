@@ -8,6 +8,8 @@ import 'presentation/screens/todo_screen.dart';
 import 'core/utils/shared_prefs.dart';
 import 'presentation/providers/todo_provider.dart';
 
+final themeProvider = StateProvider<Brightness>((ref) => Brightness.light);
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final apiKey = await SharedPrefs.getApiKey();
@@ -20,20 +22,19 @@ void main() async {
       child: MyApp(initialRoute: isValid ? TodoScreen() : ApiKeyScreen())));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   final Widget initialRoute;
 
   const MyApp({super.key, required this.initialRoute});
 
   @override
-  Widget build(BuildContext context) {
-    final brightness = View.of(context).platformDispatcher.platformBrightness;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final brightness = ref.watch(themeProvider); // Watch the themeProvider
     TextTheme textTheme = createTextTheme(context, "Inter", "ABeeZee");
     MaterialTheme theme = MaterialTheme(textTheme);
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter ToDo',
       theme: brightness == Brightness.light ? theme.light() : theme.dark(),
       home: initialRoute,
     );

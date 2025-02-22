@@ -59,7 +59,7 @@ class AddTaskDialog extends StatelessWidget {
                   ),
                   child: Text("Cancel"),
                 ),
-                ElevatedButton(
+                TextButton(
                   onPressed: () async {
                     final title = titleController.text.trim();
                     final description = descriptionController.text.trim();

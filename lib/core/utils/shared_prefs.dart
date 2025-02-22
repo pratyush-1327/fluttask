@@ -18,6 +18,6 @@ class SharedPrefs {
   static Future<void> removeApiKey(WidgetRef ref) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_apiKeyKey);
-    ref.invalidate(todoListProvider); // Clear cached todo list after logout
+    ref.invalidate(todoListProvider);
   }
 }

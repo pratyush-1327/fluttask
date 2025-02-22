@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:fluttask/presentation/providers/todo_provider.dart';
+import 'package:fluttask/presentation/widgets/todo_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import '../../data/models/todo_model.dart';
 import '../../data/api/todo_api.dart';
@@ -18,72 +19,53 @@ class TodoList extends StatelessWidget {
       itemCount: items.length,
       itemBuilder: (context, index) {
         final todo = items[index];
-        return Card(
-          child: ListTile(
-            title:
-                Text(todo.title, style: Theme.of(context).textTheme.titleLarge),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Description: ${todo.description}"),
-                Text("Time: ${todo.createdAt}"),
-              ],
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+          child: Card(
+            elevation: 4,
+            color: Theme.of(context).colorScheme.surfaceContainerHigh,
+            child: ListTile(
+              contentPadding: const EdgeInsets.all(8),
+              title: Text(
+                todo.title,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Description: ${todo.description}",
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "Time: ${todo.createdAt}",
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
+              ),
+              trailing: StatefulBuilder(
+                builder: (context, setState) {
+                  return Switch(
+                    value: todo.status == "completed",
+                    activeColor: Theme.of(context).colorScheme.primary,
+                    onChanged: (newValue) async {
+                      final apiKey = await SharedPrefs.getApiKey();
+                      final api = TodoApi(Dio());
+                      await api.updateTodo(apiKey, todo.id,
+                          {"status": newValue ? "completed" : "pending"});
+                      ref.refresh(todoListProvider);
+                      setState(() {});
+                    },
+                  );
+                },
+              ),
+              onTap: () => showTodoBottomSheet(context, todo, ref),
             ),
-            trailing: StatefulBuilder(
-              builder: (context, setState) {
-                return Switch(
-                  value: todo.status == "completed",
-                  onChanged: (newValue) async {
-                    final apiKey = await SharedPrefs.getApiKey();
-                    final api = TodoApi(Dio());
-                    await api.updateTodo(apiKey, todo.id,
-                        {"status": newValue ? "completed" : "pending"});
-                    ref.refresh(todoListProvider);
-                    setState(() {}); // Ensure UI updates immediately
-                  },
-                );
-              },
-            ),
-            onTap: () => _showTodoDetails(context, todo),
           ),
-        );
-      },
-    );
-  }
-
-  void _showTodoDetails(BuildContext context, Todo todo) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(todo.title),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("Task ID: ${todo.id}"),
-              Text("Description: ${todo.description}"),
-              Text("Time: ${todo.createdAt}"),
-              Text("Status: ${todo.status}"),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () async {
-                final apiKey = await SharedPrefs.getApiKey();
-                final api = ref.read(todoApiProvider);
-
-                await api.deleteTodo(apiKey, todo.id);
-                await ref.refresh(todoListProvider);
-                Navigator.pop(context);
-              },
-              child: Text("Delete"),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text("Close"),
-            ),
-          ],
         );
       },
     );
