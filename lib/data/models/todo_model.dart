@@ -8,14 +8,14 @@ class Todo {
   final String title;
   final String description;
   final String status;
-  final DateTime timestamp;
+  final String createdAt;
 
   Todo({
     required this.id,
     required this.title,
     required this.description,
     required this.status,
-    required this.timestamp,
+    required this.createdAt,
   });
 
   factory Todo.fromJson(Map<String, dynamic> json) {
@@ -24,10 +24,7 @@ class Todo {
       title: json['title'] as String? ?? 'Untitled',
       description: json['description'] as String? ?? 'No description',
       status: json['status'] as String? ?? 'pending',
-      timestamp: json['timestamp'] != null
-          ? DateTime.tryParse(json['timestamp']) ??
-              DateTime.fromMillisecondsSinceEpoch(0)
-          : DateTime.fromMillisecondsSinceEpoch(0),
+      createdAt: json['created_at'] as String? ?? '',
     );
   }
 

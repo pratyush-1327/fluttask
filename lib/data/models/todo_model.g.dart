@@ -11,7 +11,7 @@ Todo _$TodoFromJson(Map<String, dynamic> json) => Todo(
       title: json['title'] as String,
       description: json['description'] as String,
       status: json['status'] as String,
-      timestamp: DateTime.parse(json['timestamp'] as String),
+      createdAt: json['createdAt'] as String,
     );
 
 Map<String, dynamic> _$TodoToJson(Todo instance) => <String, dynamic>{
@@ -19,5 +19,5 @@ Map<String, dynamic> _$TodoToJson(Todo instance) => <String, dynamic>{
       'title': instance.title,
       'description': instance.description,
       'status': instance.status,
-      'timestamp': instance.timestamp.toIso8601String(),
+      'createdAt': instance.createdAt,
     };

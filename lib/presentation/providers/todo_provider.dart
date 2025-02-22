@@ -11,6 +11,9 @@ final todoApiProvider = Provider((ref) {
   return TodoApi(dio);
 });
 
+final todoApiProviderNotifier =
+    NotifierProvider<TodoApiProvider, void>(TodoApiProvider.new);
+
 final todoListProvider = FutureProvider<List<Todo>>((ref) async {
   final api = ref.watch(todoApiProvider);
   final apiKey = await SharedPrefs.getApiKey();
@@ -25,10 +28,29 @@ final todoListProvider = FutureProvider<List<Todo>>((ref) async {
   }
 });
 
+final completedTodosProvider = Provider<AsyncValue<List<Todo>>>((ref) {
+  final todos = ref.watch(todoListProvider);
+  return todos.when(
+    data: (list) => AsyncValue.data(
+        list.where((todo) => todo.status == 'completed').toList()),
+    loading: () => const AsyncValue.loading(),
+    error: (err, stack) => AsyncValue.error(err, stack),
+  );
+});
+
+final pendingTodosProvider = Provider<AsyncValue<List<Todo>>>((ref) {
+  final todos = ref.watch(todoListProvider);
+  return todos.when(
+    data: (list) => AsyncValue.data(
+        list.where((todo) => todo.status == 'pending').toList()),
+    loading: () => const AsyncValue.loading(),
+    error: (err, stack) => AsyncValue.error(err, stack),
+  );
+});
+
 final addTodoProvider =
     FutureProvider.family<Todo, Map<String, String>>((ref, taskData) async {
   final apiKey = await SharedPrefs.getApiKey();
-
   if (apiKey.isEmpty) throw Exception("API Key not found");
 
   final title = taskData['title']?.trim() ?? "";
@@ -38,11 +60,20 @@ final addTodoProvider =
     throw Exception("Title and Description cannot be empty");
   }
 
-  return await TodoApiProvider.addTodo(apiKey, title, description);
+  return await ref
+      .read(todoApiProviderNotifier.notifier)
+      .addTodo(apiKey, title, description);
 });
 
-class TodoApiProvider {
-  static Future<bool> validateApiKey(String apiKey) async {
+class TodoApiProvider extends Notifier<void> {
+  late final TodoApi api;
+
+  @override
+  void build() {
+    api = ref.read(todoApiProvider);
+  }
+
+  Future<bool> validateApiKey(String apiKey) async {
     try {
       final dio = Dio();
       final response = await dio.get(
@@ -53,31 +84,27 @@ class TodoApiProvider {
       if (response.statusCode == 401) return false;
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) {
-        print("Invalid API Key: ${e.response?.statusCode}");
+        print("Invalid API Key: \${e.response?.statusCode}");
         return false;
       }
-      print("API Validation Error: ${e.response?.statusCode ?? e.message}");
+      print("API Validation Error: \${e.response?.statusCode ?? e.message}");
     } catch (e) {
       print("Unexpected Error: $e");
     }
     return false;
   }
 
-  static Future<Todo> addTodo(
-      String apiKey, String title, String description) async {
+  Future<Todo> addTodo(String apiKey, String title, String description) async {
     if (title.isEmpty || description.isEmpty) {
       throw Exception("Title and description cannot be empty");
     }
     try {
-      final dio = Dio();
-      final api = TodoApi(dio);
-      final newTodo = await api.createTodo(apiKey, {
+      return await api.createTodo(apiKey, {
         'title': title,
         'description': description,
       });
-      return newTodo;
     } catch (e) {
-      print("Error adding Todo: $e");
+      print("Error adding Todo: \$e");
       throw Exception("Failed to add todo");
     }
   }
