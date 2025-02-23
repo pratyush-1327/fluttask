@@ -343,15 +343,17 @@ class MaterialTheme {
           bodyColor: colorScheme.onSurface,
           displayColor: colorScheme.onSurface,
         ),
-        scaffoldBackgroundColor: colorScheme.surfaceContainerLow,
+        appBarTheme: AppBarTheme(color: colorScheme.surfaceContainerLow),
+        scaffoldBackgroundColor: colorScheme.surface,
         canvasColor: colorScheme.surface,
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             elevation: 4,
-            backgroundColor: colorScheme.surfaceContainerHighest,
-            foregroundColor: colorScheme.surface,
+            backgroundColor: colorScheme.primaryContainer,
+            // foregroundColor: colorScheme.surface,
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-            textStyle: textTheme.bodyLarge?.copyWith(color: colorScheme.error),
+            textStyle:
+                textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),

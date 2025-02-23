@@ -23,7 +23,8 @@ class TodoList extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
           child: Card(
             elevation: 4,
-            color: Theme.of(context).colorScheme.surfaceContainerHigh,
+            color:
+                Theme.of(context).colorScheme.primaryContainer.withAlpha(190),
             child: ListTile(
               contentPadding: const EdgeInsets.all(8),
               title: Text(

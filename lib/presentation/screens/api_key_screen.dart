@@ -11,11 +11,20 @@ class ApiKeyScreen extends StatefulWidget {
 class _ApiKeyScreenState extends State<ApiKeyScreen> {
   final TextEditingController _apiKeyController = TextEditingController();
   String? _error;
+  bool _isLoading = false;
 
   Future<void> _saveApiKey() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
     final apiKey = _apiKeyController.text.trim();
     if (apiKey.isEmpty) {
-      setState(() => _error = 'API Key cannot be empty');
+      setState(() {
+        _error = 'API Key cannot be empty';
+        _isLoading = false;
+      });
       return;
     }
     try {
@@ -23,6 +32,7 @@ class _ApiKeyScreenState extends State<ApiKeyScreen> {
       final isValid = await todoApiProvider.validateApiKey(apiKey);
       if (isValid) {
         await SharedPrefs.saveApiKey(apiKey);
+        // ref.invalidate(todoListProvider);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => TodoScreen()),
@@ -32,33 +42,73 @@ class _ApiKeyScreenState extends State<ApiKeyScreen> {
       }
     } catch (e) {
       setState(() => _error = 'Error: $e');
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Enter API Key')),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: _apiKeyController,
-              decoration: InputDecoration(
-                labelText: 'API Key',
-                errorText: _error,
-              ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _saveApiKey,
-              child: Text('Save & Continue'),
-            ),
-          ],
+      // appBar: AppBar(title: Text('Enter API Key')),
+      body: Stack(children: [
+        Positioned(
+          bottom: -70,
+          left: 100,
+          child: Image.asset(
+            "lib/presentation/images/splant.png",
+            fit: BoxFit.fitWidth,
+          ),
         ),
-      ),
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            spacing: 40,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "Welcome !\nEnter your API Key \nto login",
+                style: Theme.of(context).textTheme.displaySmall,
+              ),
+              TextField(
+                controller: _apiKeyController,
+                decoration: InputDecoration(
+                  labelText: 'API Key',
+                  errorText: _error,
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Don't have one?",
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyLarge
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  TextButton(
+                      onPressed: () {},
+                      child: Text(
+                        "Click Here",
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyLarge
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      )),
+                ],
+              ),
+              ElevatedButton(
+                onPressed: _isLoading ? null : _saveApiKey,
+                child: _isLoading
+                    ? CircularProgressIndicator()
+                    : Text('Save & Continue'),
+              ),
+            ],
+          ),
+        ),
+      ]),
     );
   }
 }

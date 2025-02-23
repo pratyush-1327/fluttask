@@ -40,8 +40,6 @@ class TodoScreen extends ConsumerWidget {
         appBar: AppBar(
           title: Text("FlutTask",
               style: Theme.of(context).textTheme.headlineMedium),
-          backgroundColor:
-              Theme.of(context).colorScheme.surfaceContainerHighest,
           actions: [
             PopupMenuButton<String>(
               onSelected: (String result) {
@@ -74,13 +72,23 @@ class TodoScreen extends ConsumerWidget {
             ],
           ),
         ),
-        body: TabBarView(
-          children: [
-            _buildTodoList(context, todos, ref),
-            _buildTodoList(context, completedTodos, ref),
-            _buildTodoList(context, pendingTodos, ref),
-          ],
-        ),
+        body: Stack(children: [
+          Positioned(
+            bottom: -70,
+            left: 100,
+            child: Image.asset(
+              "lib/presentation/images/splant.png",
+              fit: BoxFit.fitWidth,
+            ),
+          ),
+          TabBarView(
+            children: [
+              _buildTodoList(context, todos, ref),
+              _buildTodoList(context, completedTodos, ref),
+              _buildTodoList(context, pendingTodos, ref),
+            ],
+          ),
+        ]),
         floatingActionButton: FloatingActionButton(
           onPressed: () => showDialog(
             context: context,
