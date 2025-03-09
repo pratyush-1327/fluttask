@@ -7,7 +7,6 @@ import '../../core/utils/shared_prefs.dart';
 import '../widgets/todo_list.dart';
 import '../widgets/add_task_dialog.dart';
 import '../screens/api_key_screen.dart';
-import '../../core/theme/theme.dart'; // Add this import
 
 class TodoScreen extends ConsumerWidget {
   const TodoScreen({super.key});
@@ -37,6 +36,7 @@ class TodoScreen extends ConsumerWidget {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           title: Text("FlutTask",
               style: Theme.of(context).textTheme.headlineMedium),

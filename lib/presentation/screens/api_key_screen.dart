@@ -50,6 +50,7 @@ class _ApiKeyScreenState extends State<ApiKeyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       // appBar: AppBar(title: Text('Enter API Key')),
       body: Stack(children: [
         Positioned(

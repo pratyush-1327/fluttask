@@ -21,69 +21,76 @@ void showTodoBottomSheet(BuildContext context, Todo todo, WidgetRef ref) {
     ),
     builder: (context) {
       return Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              controller: titleController,
-              decoration: InputDecoration(labelText: "Title"),
-            ),
-            TextField(
-              controller: descriptionController,
-              decoration: InputDecoration(labelText: "Description"),
-            ),
-            const SizedBox(height: 8),
-            Text("Task ID: ${todo.id}",
-                style: Theme.of(context).textTheme.bodyMedium),
-            Text("Time: ${todo.createdAt}",
-                style: Theme.of(context).textTheme.bodyMedium),
-            Text("Status: ${todo.status}",
-                style: Theme.of(context).textTheme.bodyMedium),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ElevatedButton(
-                  onPressed: () async {
-                    final apiKey = await SharedPrefs.getApiKey();
-                    final api = ref.read(todoApiProvider);
-                    await api.deleteTodo(apiKey, todo.id);
-                    await ref.refresh(todoListProvider);
-                    Navigator.pop(context);
-                  },
-                  child: Text("Delete",
-                      style: Theme.of(context).textTheme.labelLarge),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    final updatedTitle = titleController.text.trim();
-                    final updatedDescription =
-                        descriptionController.text.trim();
-                    if (updatedTitle.isNotEmpty &&
-                        updatedDescription.isNotEmpty) {
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 16,
+          right: 16,
+          top: 16,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextField(
+                controller: titleController,
+                decoration: InputDecoration(labelText: "Title"),
+              ),
+              TextField(
+                controller: descriptionController,
+                decoration: InputDecoration(labelText: "Description"),
+              ),
+              const SizedBox(height: 8),
+              Text("Task ID: ${todo.id}",
+                  style: Theme.of(context).textTheme.bodyMedium),
+              Text("Time: ${todo.createdAt}",
+                  style: Theme.of(context).textTheme.bodyMedium),
+              Text("Status: ${todo.status}",
+                  style: Theme.of(context).textTheme.bodyMedium),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ElevatedButton(
+                    onPressed: () async {
                       final apiKey = await SharedPrefs.getApiKey();
                       final api = ref.read(todoApiProvider);
-                      await api.updateTodo(apiKey, todo.id, {
-                        "title": updatedTitle,
-                        "description": updatedDescription,
-                      });
+                      await api.deleteTodo(apiKey, todo.id);
                       await ref.refresh(todoListProvider);
-                    }
-                    Navigator.pop(context);
-                  },
-                  child: Text("Update",
-                      style: Theme.of(context).textTheme.labelLarge),
-                ),
-                ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text("Close",
-                      style: Theme.of(context).textTheme.labelLarge),
-                ),
-              ],
-            ),
-          ],
+                      Navigator.pop(context);
+                    },
+                    child: Text("Delete",
+                        style: Theme.of(context).textTheme.labelLarge),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final updatedTitle = titleController.text.trim();
+                      final updatedDescription =
+                          descriptionController.text.trim();
+                      if (updatedTitle.isNotEmpty &&
+                          updatedDescription.isNotEmpty) {
+                        final apiKey = await SharedPrefs.getApiKey();
+                        final api = ref.read(todoApiProvider);
+                        await api.updateTodo(apiKey, todo.id, {
+                          "title": updatedTitle,
+                          "description": updatedDescription,
+                        });
+                        await ref.refresh(todoListProvider);
+                      }
+                      Navigator.pop(context);
+                    },
+                    child: Text("Update",
+                        style: Theme.of(context).textTheme.labelLarge),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text("Close",
+                        style: Theme.of(context).textTheme.labelLarge),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       );
     },
