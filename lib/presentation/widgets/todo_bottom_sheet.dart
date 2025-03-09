@@ -1,8 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/todo_model.dart';
-import '../../data/api/todo_api.dart';
 import '../../core/utils/shared_prefs.dart';
 import '../providers/todo_provider.dart';
 
@@ -13,7 +11,6 @@ void showTodoBottomSheet(BuildContext context, Todo todo, WidgetRef ref) {
       TextEditingController(text: todo.description);
 
   showModalBottomSheet(
-    // backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
     context: context,
     isScrollControlled: true,
     shape: RoundedRectangleBorder(
@@ -34,11 +31,11 @@ void showTodoBottomSheet(BuildContext context, Todo todo, WidgetRef ref) {
             children: [
               TextField(
                 controller: titleController,
-                decoration: InputDecoration(labelText: "Title"),
+                decoration: const InputDecoration(labelText: "Title"),
               ),
               TextField(
                 controller: descriptionController,
-                decoration: InputDecoration(labelText: "Description"),
+                decoration: const InputDecoration(labelText: "Description"),
               ),
               const SizedBox(height: 8),
               Text("Task ID: ${todo.id}",
@@ -67,14 +64,21 @@ void showTodoBottomSheet(BuildContext context, Todo todo, WidgetRef ref) {
                       final updatedTitle = titleController.text.trim();
                       final updatedDescription =
                           descriptionController.text.trim();
+
                       if (updatedTitle.isNotEmpty &&
                           updatedDescription.isNotEmpty) {
                         final apiKey = await SharedPrefs.getApiKey();
                         final api = ref.read(todoApiProvider);
-                        await api.updateTodo(apiKey, todo.id, {
-                          "title": updatedTitle,
-                          "description": updatedDescription,
-                        });
+
+                        // Use TodoUpdate model
+                        final updatedTodo = TodoUpdate(
+                          title: updatedTitle,
+                          description: updatedDescription,
+                          status: todo.status,
+                        );
+
+                        await api.updateTodo(
+                            apiKey, todo.id, updatedTodo.toJson());
                         await ref.refresh(todoListProvider);
                       }
                       Navigator.pop(context);

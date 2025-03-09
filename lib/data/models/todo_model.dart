@@ -8,25 +8,46 @@ class Todo {
   final String title;
   final String description;
   final String status;
-  final String createdAt;
+
+  @JsonKey(name: 'created_at')
+  final String? createdAt;
 
   Todo({
     required this.id,
     required this.title,
     required this.description,
     required this.status,
-    required this.createdAt,
+    this.createdAt,
   });
 
-  factory Todo.fromJson(Map<String, dynamic> json) {
-    return Todo(
-      id: json['id'] as int? ?? 0,
-      title: json['title'] as String? ?? 'Untitled',
-      description: json['description'] as String? ?? 'No description',
-      status: json['status'] as String? ?? 'pending',
-      createdAt: json['created_at'] as String? ?? '',
-    );
-  }
-
+  factory Todo.fromJson(Map<String, dynamic> json) => _$TodoFromJson(json);
   Map<String, dynamic> toJson() => _$TodoToJson(this);
+}
+
+@JsonSerializable()
+class TodoCreate {
+  final String title;
+  final String description;
+
+  TodoCreate({
+    required this.title,
+    required this.description,
+  });
+
+  factory TodoCreate.fromJson(Map<String, dynamic> json) =>
+      _$TodoCreateFromJson(json);
+  Map<String, dynamic> toJson() => _$TodoCreateToJson(this);
+}
+
+@JsonSerializable()
+class TodoUpdate {
+  final String? title;
+  final String? description;
+  final String? status;
+
+  TodoUpdate({this.title, this.description, this.status});
+
+  factory TodoUpdate.fromJson(Map<String, dynamic> json) =>
+      _$TodoUpdateFromJson(json);
+  Map<String, dynamic> toJson() => _$TodoUpdateToJson(this);
 }

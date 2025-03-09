@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/api/todo_api.dart';
 import '../../core/utils/shared_prefs.dart';
+import '../../data/models/todo_model.dart';
 
 class AddTaskDialog extends StatelessWidget {
   final WidgetRef ref;
@@ -12,8 +13,8 @@ class AddTaskDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController titleController = TextEditingController();
-    TextEditingController descriptionController = TextEditingController();
+    final TextEditingController titleController = TextEditingController();
+    final TextEditingController descriptionController = TextEditingController();
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -50,14 +51,14 @@ class AddTaskDialog extends StatelessWidget {
               children: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
+                  style: TextButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: Theme.of(context).colorScheme.surface,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: Text("Cancel"),
+                  child: const Text("Cancel"),
                 ),
                 TextButton(
                   onPressed: () async {
@@ -66,7 +67,8 @@ class AddTaskDialog extends StatelessWidget {
 
                     if (title.isEmpty || description.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text("Title and Description cannot be empty"),
+                        content:
+                            const Text("Title and Description cannot be empty"),
                         backgroundColor: Theme.of(context).colorScheme.error,
                       ));
                       return;
@@ -75,22 +77,24 @@ class AddTaskDialog extends StatelessWidget {
                     final apiKey = await SharedPrefs.getApiKey();
                     final api = ref.read(todoApiProvider);
 
-                    await api.createTodo(apiKey, {
-                      "title": title,
-                      "description": description,
-                      "status": "pending"
-                    });
+                    // Use the TodoCreate model
+                    final newTodo = TodoCreate(
+                      title: title,
+                      description: description,
+                    );
+
+                    await api.createTodo(apiKey, newTodo.toJson());
                     await ref.refresh(todoListProvider);
                     Navigator.pop(context);
                   },
-                  style: ElevatedButton.styleFrom(
+                  style: TextButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: Theme.of(context).colorScheme.surface,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: Text("Add"),
+                  child: const Text("Add"),
                 ),
               ],
             ),
