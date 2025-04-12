@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/utils/shared_prefs.dart';
 import '../providers/todo_provider.dart';
 import 'todo_screen.dart';
@@ -89,7 +90,8 @@ class _ApiKeyScreenState extends State<ApiKeyScreen> {
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   TextButton(
-                      onPressed: () {},
+                      onPressed: () => launchUrl(Uri.parse(
+                          'https://todocrud.chiggydoes.tech/register')),
                       child: Text(
                         "Click Here",
                         style: Theme.of(context)
