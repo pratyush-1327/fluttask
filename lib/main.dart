@@ -31,7 +31,7 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final brightness = ref.watch(themeProvider); // Watch the themeProvider
+    final brightness = ref.watch(themeProvider); 
     TextTheme textTheme = createTextTheme(context, "Inter", "ABeeZee");
     MaterialTheme theme = MaterialTheme(textTheme);
 

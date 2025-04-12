@@ -1,6 +1,7 @@
 import 'package:fluttask/presentation/providers/todo_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class SharedPrefs {
   static const _apiKey = "api_key";
@@ -15,10 +16,8 @@ class SharedPrefs {
     return prefs.getString(_apiKey) ?? "";
   }
 
-  static Future<void> removeApiKey(WidgetRef ref) async {
+  static Future<void> removeApiKey() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove("api_key");
-    await prefs.remove("_apiKey");
-    ref.invalidate(todoListProvider);
+    await prefs.remove(_apiKey); 
   }
 }

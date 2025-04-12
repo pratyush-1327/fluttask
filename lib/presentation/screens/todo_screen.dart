@@ -9,11 +9,12 @@ import '../widgets/add_task_dialog.dart';
 import '../screens/api_key_screen.dart';
 
 class TodoScreen extends ConsumerWidget {
-  const TodoScreen({super.key});
+const TodoScreen({super.key});
 
-  void _logout(WidgetRef ref, BuildContext context) async {
-    await SharedPrefs.removeApiKey(ref);
-    Navigator.pushReplacement(
+void _logout(WidgetRef ref, BuildContext context) async {
+  await SharedPrefs.removeApiKey(); // Removed 'ref' argument
+  ref.invalidate(todoListProvider); // Invalidate the provider to reset its state
+  Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => ApiKeyScreen()),
     );
@@ -93,7 +94,7 @@ class TodoScreen extends ConsumerWidget {
             context: context,
             builder: (context) => AddTaskDialog(ref: ref),
           ),
-          // backgroundColor: Theme.of(context).colorScheme.secondary,
+         
           child:
               Icon(Icons.add, color: Theme.of(context).colorScheme.onSecondary),
         ),
