@@ -52,16 +52,15 @@ class _ApiKeyScreenState extends State<ApiKeyScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       // appBar: AppBar(title: Text('Enter API Key')),
-      body: Stack(children: [
-        Positioned(
-          bottom: -70,
-          left: 100,
-          child: Image.asset(
-            "lib/presentation/images/splant.png",
-            fit: BoxFit.fitWidth,
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("lib/presentation/images/splant.png"),
+            fit: BoxFit.none,
+            alignment: Alignment(-3, 1.6),
           ),
         ),
-        Padding(
+        child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(
             spacing: 40,
@@ -109,7 +108,7 @@ class _ApiKeyScreenState extends State<ApiKeyScreen> {
             ],
           ),
         ),
-      ]),
+      ),
     );
   }
 }

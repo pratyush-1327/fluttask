@@ -1,6 +1,5 @@
 import 'package:fluttask/presentation/screens/api_key_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttask/presentation/screens/todo_screen.dart'; // Import the next screen
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -8,44 +7,40 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          // Background Image
-          Positioned(
-            bottom: -70,
-            left: 100,
-            child: Image.asset(
-              "lib/presentation/images/splant.png",
-              fit: BoxFit.fitWidth,
-            ),
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("lib/presentation/images/splant.png"),
+            fit: BoxFit.none,
+            alignment: Alignment(-3.2, 1.3),
           ),
-
-          // Centered Text & Button
-          Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "Welcome to Fluttask!",
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      _createRoute(),
-                    );
-                  },
-                  child: const Text("Get Started"),
-                ),
-              ],
-            ),
+        ),
+        child: Center(
+          child: Column(
+            spacing: 10,
+            // mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Welcome to Fluttask!",
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                textAlign: TextAlign.center,
+              ),
+              // const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    _createRoute(),
+                  );
+                },
+                child: const Text("Get Started"),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

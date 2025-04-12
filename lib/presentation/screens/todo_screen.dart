@@ -72,23 +72,22 @@ class TodoScreen extends ConsumerWidget {
             ],
           ),
         ),
-        body: Stack(children: [
-          Positioned(
-            bottom: -70,
-            left: 100,
-            child: Image.asset(
-              "lib/presentation/images/splant.png",
-              fit: BoxFit.fitWidth,
+        body: Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("lib/presentation/images/splant.png"),
+              fit: BoxFit.none,
+              alignment: Alignment(-3, 1.6),
             ),
           ),
-          TabBarView(
+          child: TabBarView(
             children: [
               _buildTodoList(context, todos, ref),
               _buildTodoList(context, completedTodos, ref),
               _buildTodoList(context, pendingTodos, ref),
             ],
           ),
-        ]),
+        ),
         floatingActionButton: FloatingActionButton(
           onPressed: () => showDialog(
             context: context,
